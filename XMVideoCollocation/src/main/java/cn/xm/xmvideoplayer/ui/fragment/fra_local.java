@@ -1,7 +1,9 @@
 package cn.xm.xmvideoplayer.ui.fragment;
 
 import android.os.Bundle;
+import android.widget.TextView;
 
+import butterknife.Bind;
 import cn.xm.xmvideoplayer.R;
 import cn.xm.xmvideoplayer.core.BaseFragment;
 
@@ -11,6 +13,8 @@ import cn.xm.xmvideoplayer.core.BaseFragment;
 public class fra_local extends BaseFragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    @Bind(R.id.tv_title)
+    TextView tvTitle;
 
     private String mParam1;
     private String mParam2;
@@ -41,6 +45,6 @@ public class fra_local extends BaseFragment {
 
     @Override
     public void initViews() {
-
+        tvTitle.setText(getString(R.string.tablocal));
     }
 }

@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
-import butterknife.ButterKnife;
 import cn.xm.xmvideoplayer.R;
 import cn.xm.xmvideoplayer.adapter.TabHomePagerAdaper;
 import cn.xm.xmvideoplayer.core.BaseFragment;
@@ -84,16 +83,21 @@ public class fra_home extends BaseFragment {
         activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);*/
 
         //viewpager
-        listTilte.add("英美剧");
-        listTilte.add("电影");
-        listTilte.add("纪录片");
+        listTilte.add(getString(R.string.lastupdate));
+        listTilte.add(getString(R.string.film));
+        listTilte.add(getString(R.string.tvplay));
+        listTilte.add(getString(R.string.cartoon));
+        listTilte.add(getString(R.string.variety));
+
         seasonbuild = HomeRecycleView.Builder();
         listView.add(seasonbuild.createView(activity));
 
         listView.add(HomeRecycleView.Builder().createView(activity));
         listView.add(HomeRecycleView.Builder().createView(activity));
+        listView.add(HomeRecycleView.Builder().createView(activity));
+        listView.add(HomeRecycleView.Builder().createView(activity));
 
-        viewPager.setOffscreenPageLimit(3);
+        viewPager.setOffscreenPageLimit(5);
         viewPager.setAdapter(new TabHomePagerAdaper(listView, listTilte));
 
         //TabLayout
@@ -126,6 +130,5 @@ public class fra_home extends BaseFragment {
     public void onDestroyView() {
         super.onDestroyView();
         seasonbuild.destroy();
-        ButterKnife.unbind(this);
     }
 }

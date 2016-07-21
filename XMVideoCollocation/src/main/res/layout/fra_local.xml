@@ -4,6 +4,6 @@
     android:layout_height="match_parent"
     tools:context="cn.xm.xmvideoplayer.ui.fragment.fra_home">
 
-    <include layout="@layout/incd_title_s3" />
+    <include layout="@layout/incd_title_s2" />
 
 </FrameLayout>
