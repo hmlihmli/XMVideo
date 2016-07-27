@@ -14,8 +14,8 @@
     <string name="lastupdate">最近更新</string>
     <string name="film">电影</string>
     <string name="tvplay">电视剧</string>
-    <string name="cartoon">动画片</string>
-    <string name="variety">综艺片</string>
+    <string name="cartoon">动漫</string>
+    <string name="variety">综艺</string>
 
 
 </resources>

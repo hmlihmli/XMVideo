@@ -18,7 +18,11 @@ import butterknife.Bind;
 import cn.xm.xmvideoplayer.R;
 import cn.xm.xmvideoplayer.adapter.TabHomePagerAdaper;
 import cn.xm.xmvideoplayer.core.BaseFragment;
-import cn.xm.xmvideoplayer.view.HomeRecycleView;
+import cn.xm.xmvideoplayer.view.HomeRecycleView1;
+import cn.xm.xmvideoplayer.view.HomeRecycleView2;
+import cn.xm.xmvideoplayer.view.HomeRecycleView3;
+import cn.xm.xmvideoplayer.view.HomeRecycleView4;
+import cn.xm.xmvideoplayer.view.HomeRecycleView5;
 
 /**
  * homefra
@@ -40,7 +44,7 @@ public class fra_home extends BaseFragment {
 
     private List<String> listTilte = new ArrayList<>();
     private List<View> listView = new ArrayList<>();
-    private HomeRecycleView seasonbuild;
+    private HomeRecycleView1 seasonbuild;
 
 
     public static fra_home newInstance(String param1, String param2) {
@@ -89,13 +93,11 @@ public class fra_home extends BaseFragment {
         listTilte.add(getString(R.string.cartoon));
         listTilte.add(getString(R.string.variety));
 
-        seasonbuild = HomeRecycleView.Builder();
-        listView.add(seasonbuild.createView(activity));
-
-        listView.add(HomeRecycleView.Builder().createView(activity));
-        listView.add(HomeRecycleView.Builder().createView(activity));
-        listView.add(HomeRecycleView.Builder().createView(activity));
-        listView.add(HomeRecycleView.Builder().createView(activity));
+        listView.add(HomeRecycleView1.Builder().createView(activity));
+        listView.add(HomeRecycleView2.Builder().createView(activity));
+        listView.add(HomeRecycleView3.Builder().createView(activity));
+        listView.add(HomeRecycleView4.Builder().createView(activity));
+        listView.add(HomeRecycleView5.Builder().createView(activity));
 
         viewPager.setOffscreenPageLimit(5);
         viewPager.setAdapter(new TabHomePagerAdaper(listView, listTilte));
