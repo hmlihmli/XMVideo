@@ -44,7 +44,11 @@ public class fra_home extends BaseFragment {
 
     private List<String> listTilte = new ArrayList<>();
     private List<View> listView = new ArrayList<>();
-    private HomeRecycleView1 seasonbuild;
+    private HomeRecycleView1 homeRecycleView1;
+    private HomeRecycleView2 homeRecycleView2;
+    private HomeRecycleView3 homeRecycleView3;
+    private HomeRecycleView4 homeRecycleView4;
+    private HomeRecycleView5 homeRecycleView5;
 
 
     public static fra_home newInstance(String param1, String param2) {
@@ -92,12 +96,16 @@ public class fra_home extends BaseFragment {
         listTilte.add(getString(R.string.tvplay));
         listTilte.add(getString(R.string.cartoon));
         listTilte.add(getString(R.string.variety));
-
-        listView.add(HomeRecycleView1.Builder().createView(activity));
-        listView.add(HomeRecycleView2.Builder().createView(activity));
-        listView.add(HomeRecycleView3.Builder().createView(activity));
-        listView.add(HomeRecycleView4.Builder().createView(activity));
-        listView.add(HomeRecycleView5.Builder().createView(activity));
+        homeRecycleView1 = HomeRecycleView1.Builder();
+        listView.add(homeRecycleView1.createView(activity));
+        homeRecycleView2 = HomeRecycleView2.Builder();
+        listView.add(homeRecycleView2.createView(activity));
+        homeRecycleView3 = HomeRecycleView3.Builder();
+        listView.add(homeRecycleView3.createView(activity));
+        homeRecycleView4 = HomeRecycleView4.Builder();
+        listView.add(homeRecycleView4.createView(activity));
+        homeRecycleView5 = HomeRecycleView5.Builder();
+        listView.add(homeRecycleView5.createView(activity));
 
         viewPager.setOffscreenPageLimit(5);
         viewPager.setAdapter(new TabHomePagerAdaper(listView, listTilte));
@@ -131,6 +139,10 @@ public class fra_home extends BaseFragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        seasonbuild.destroy();
+        homeRecycleView1.destroy();
+        homeRecycleView2.destroy();
+        homeRecycleView3.destroy();
+        homeRecycleView4.destroy();
+        homeRecycleView5.destroy();
     }
 }

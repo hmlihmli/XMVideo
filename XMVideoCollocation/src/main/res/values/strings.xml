@@ -16,6 +16,8 @@
     <string name="tvplay">电视剧</string>
     <string name="cartoon">动漫</string>
     <string name="variety">综艺</string>
+    <string name="textcontent">剧情简介</string>
+    <string name="textcontent2">资源下载</string>
 
 
 </resources>

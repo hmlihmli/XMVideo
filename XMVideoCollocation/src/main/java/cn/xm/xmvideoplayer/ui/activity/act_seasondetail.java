@@ -3,12 +3,15 @@ package cn.xm.xmvideoplayer.ui.activity;
 
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -19,8 +22,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.jude.easyrecyclerview.EasyRecyclerView;
 import com.jude.easyrecyclerview.adapter.RecyclerArrayAdapter;
 
-import java.util.Collections;
-import java.util.Comparator;
+
 import java.util.List;
 
 import butterknife.Bind;
@@ -28,27 +30,19 @@ import butterknife.ButterKnife;
 import cn.xm.xmvideoplayer.R;
 import cn.xm.xmvideoplayer.adapter.SeasonDetailAdapter;
 import cn.xm.xmvideoplayer.constant.IntenConstant;
-import cn.xm.xmvideoplayer.constant.VideoConstant;
 import cn.xm.xmvideoplayer.core.BaseSwipeBackActivity;
-import cn.xm.xmvideoplayer.data.api.RRVideoService;
-import cn.xm.xmvideoplayer.entity.SeasonDetailBean;
-import cn.xm.xmvideoplayer.entity.SeasonDetailBean.DataBean.SeasonBean;
-import cn.xm.xmvideoplayer.entity.VideoUrlBean;
+import cn.xm.xmvideoplayer.data.jsoup.JsoupApi;
+import cn.xm.xmvideoplayer.entity.PageDetailInfo;
+import cn.xm.xmvideoplayer.utils.CheckApp;
 import cn.xm.xmvideoplayer.utils.DensityUtil;
-import cn.xm.xmvideoplayer.widget.PLVideoTextureActivity;
-import rx.Subscriber;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action0;
-import rx.functions.Action1;
-import rx.functions.Func1;
-import rx.schedulers.Schedulers;
 
 /**
  * 电视剧详情
  */
 public class act_seasondetail extends BaseSwipeBackActivity {
 
+ /*   @Bind(R.id.detail_text)
+    TextView detailtext;*/
 
     @Bind(R.id.detail_image)
     ImageView detailImage;
@@ -60,20 +54,13 @@ public class act_seasondetail extends BaseSwipeBackActivity {
     CollapsingToolbarLayout mcollToolbarLayout;
     @Bind(R.id.recycler_view)
     EasyRecyclerView mrecyclerView;
-    /**
-     * 解码方式 0软解 1硬解
-     */
-    private int mIsHwCodecEnabled = 0;
+    private Handler mhandler = new Handler();
     private ActionBar mActionBar;
-
     private SeasonDetailAdapter mAdapter;
-    private Subscription subscribe;
-
-    private String seasonid;
-    private Subscription subscribepath;
-    private TextView tv_playcount;
-    private TextView tv_score;
+    private String pageDetailurl;
     private TextView tv_content;
+    private TextView tv_actor;
+
 
     @Override
     public int getLayoutId() {
@@ -83,13 +70,12 @@ public class act_seasondetail extends BaseSwipeBackActivity {
     @Override
     public void initViews(Bundle savedInstanceState) {
 
-        seasonid = getIntent().getStringExtra(IntenConstant.seasonid);
+        pageDetailurl = getIntent().getStringExtra(IntenConstant.pagedetailurl);
 
         //toolbar
         inittoolbar();
         //recycleview
         initrecycle();
-
         //getdata
         getDetaildata();
 
@@ -101,8 +87,8 @@ public class act_seasondetail extends BaseSwipeBackActivity {
     private void initrecycle() {
         //
         mAdapter = new SeasonDetailAdapter(this);
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 5);
-        gridLayoutManager.setSpanSizeLookup(mAdapter.obtainGridSpanSizeLookUp(5));
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 1);
+        gridLayoutManager.setSpanSizeLookup(mAdapter.obtainGridSpanSizeLookUp(1));
         mrecyclerView.setLayoutManager(gridLayoutManager);
         //
         mAdapter.addHeader(new RecyclerArrayAdapter.ItemView() {
@@ -120,51 +106,20 @@ public class act_seasondetail extends BaseSwipeBackActivity {
         mAdapter.setOnItemClickListener(new RecyclerArrayAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
-                //Snackbar.make(mrecyclerView, "相应条目点击", Snackbar.LENGTH_SHORT).show();
-                playvideo(VideoConstant.quality, seasonid, mAdapter.getItem(position).getSid());
+
+                if (CheckApp.isAvilible(getApplicationContext(), CheckApp.XLPackget)) {
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(mAdapter.getItem(position)));
+                    intent.addCategory("android.intent.category.DEFAULT");
+                    startActivity(intent);
+                    Snackbar.make(mrecyclerView, "启动迅雷下载", Snackbar.LENGTH_SHORT).show();
+                } else {
+                    Snackbar.make(mrecyclerView, "需要下载手机迅雷", Snackbar.LENGTH_SHORT).show();
+                }
+
             }
         });
         //
 
-    }
-
-    /**
-     * 播放视频
-     */
-    private void playvideo(String quality, String seasonId, String episodeSid) {
-        //获取播放地址
-        subscribepath = RRVideoService.builder().RRVideoApi()
-                .getVideoUrl(quality, seasonId, episodeSid)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .map(new Func1<VideoUrlBean, VideoUrlBean.DataBean.M3u8Bean>() {
-                    @Override
-                    public VideoUrlBean.DataBean.M3u8Bean call(VideoUrlBean videoUrlBean) {
-                        return videoUrlBean.getData().getM3u8();
-                    }
-                })
-                .doOnSubscribe(new Action0() {
-                    @Override
-                    public void call() {
-                        //
-                        Snackbar.make(mrecyclerView, "获取播放链接ing", Snackbar.LENGTH_SHORT).show();
-                    }
-                })
-                .subscribe(new Action1<VideoUrlBean.DataBean.M3u8Bean>() {
-                    @Override
-                    public void call(VideoUrlBean.DataBean.M3u8Bean data) {
-                        //启动播放器
-                        Intent intent = new Intent(act_seasondetail.this, PLVideoTextureActivity.class);
-                        intent.putExtra("videoPath", data.getUrl());
-                        intent.putExtra("mediaCodec", mIsHwCodecEnabled);
-                        startActivity(intent);
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        Snackbar.make(mrecyclerView, "获取播放链接失败", Snackbar.LENGTH_SHORT).show();
-                    }
-                });
     }
 
 
@@ -195,69 +150,45 @@ public class act_seasondetail extends BaseSwipeBackActivity {
         mtoolbar.setTitleTextColor(getResources().getColor(R.color.black_90));*/
         mcollToolbarLayout.setExpandedTitleMarginEnd(DensityUtil.dip2px(this, 12.0f));
         mcollToolbarLayout.setExpandedTitleMarginStart(DensityUtil.dip2px(this, 12.0f));
-
     }
 
     /**
      * 获取网络数据
      */
     private void getDetaildata() {
-        if ("".equals(seasonid) || seasonid.length() == 0) {
-            return;
-        }
-        //请求网络
-        subscribe = RRVideoService.builder().RRVideoApi()
-                .getSeasonDetail(seasonid)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .map(new Func1<SeasonDetailBean, SeasonBean>() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                final PageDetailInfo pageDetailInfo = JsoupApi.NewInstans().GetPageDetail(pageDetailurl);
+                mhandler.post(new Runnable() {
                     @Override
-                    public SeasonBean call(SeasonDetailBean seasonDetailBean) {
-                        return seasonDetailBean.getData().getSeason();
-                    }
-                })
-                .subscribe(new Subscriber<SeasonBean>() {
-                    @Override
-                    public void onCompleted() {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Snackbar.make(mrecyclerView, "网络异常", Snackbar.LENGTH_SHORT).show();
-                    }
-
-                    @Override
-                    public void onNext(SeasonBean data) {
-                        updataview(data);
+                    public void run() {
+                        updataview(pageDetailInfo);
+                        if (pageDetailInfo.getDownlist().size() > 0) {
+                            for (List<String> list : pageDetailInfo.getDownlist()) {
+                                if (list.size() > 0) {
+                                    mAdapter.addAll(list);
+                                }
+                            }
+                        }
                     }
                 });
+            }
+        }).start();
 
     }
 
     /**
      * 更新view
-     *
-     * @param data
      */
-    private void updataview(final SeasonBean data) {
-        //list排序
-        Comparator<SeasonBean.EpisodeBriefBean> comparable = new Comparator<SeasonBean.EpisodeBriefBean>() {
+    private void updataview(PageDetailInfo pageDetailInfo) {
 
-            @Override
-            public int compare(SeasonBean.EpisodeBriefBean data1, SeasonBean.EpisodeBriefBean data2) {
-                return -(Integer.parseInt(data1.getEpisode()) - Integer.parseInt(data2.getEpisode()));
-            }
-        };
-        List<SeasonBean.EpisodeBriefBean> playUrlList = data.getEpisode_brief();
-        Collections.sort(playUrlList, comparable);
         //header
-        updateheaer(data.getViewCount() + "", data.getScore() + "", data.getBrief());
-        mAdapter.addAll(playUrlList);
+        updateheaer(pageDetailInfo.getAlltext(), pageDetailInfo.getActor());
 
         //
-        mcollToolbarLayout.setTitle(data.getTitle());
-        Glide.with(this).load(data.getCover()).centerCrop().diskCacheStrategy(DiskCacheStrategy.SOURCE).into(detailImage);
+        mcollToolbarLayout.setTitle(pageDetailInfo.getTitle());
+        Glide.with(this).load(pageDetailInfo.getCover()).centerCrop().diskCacheStrategy(DiskCacheStrategy.SOURCE).into(detailImage);
     }
 
     /**
@@ -267,27 +198,22 @@ public class act_seasondetail extends BaseSwipeBackActivity {
      */
     private View initheadview() {
         View view = getLayoutInflater().inflate(R.layout.item_seasonlist_header, null);
-        tv_playcount = ButterKnife.findById(view, R.id.tv_playcount);
-        tv_score = ButterKnife.findById(view, R.id.tv_score);
         tv_content = ButterKnife.findById(view, R.id.tv_content);
-
+        tv_actor = ButterKnife.findById(view, R.id.tv_actor);
         return view;
     }
 
     /**
      * 更新headerview数据
      *
-     * @param playcount
-     * @param score
      * @param content
      */
-    private void updateheaer(String playcount, String score, String content) {
+    private void updateheaer(String content, String actor) {
         if (content.length() == 0) {
             content = "暂时没有简介哦~~";
         }
-        tv_content.setText(content);
-        tv_score.setText("评分：" + score);
-        tv_playcount.setText("播放量:" + playcount);
+        tv_content.setText(Html.fromHtml(content));
+        tv_actor.setText(Html.fromHtml(actor));
     }
 /*
     @Override
@@ -310,11 +236,6 @@ public class act_seasondetail extends BaseSwipeBackActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (subscribe != null) {
-            subscribe.unsubscribe();
-        }
-        if (subscribepath != null) {
-            subscribepath.unsubscribe();
-        }
+        mhandler.removeCallbacksAndMessages(null);
     }
 }

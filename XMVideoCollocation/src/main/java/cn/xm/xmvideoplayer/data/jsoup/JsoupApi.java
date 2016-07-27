@@ -11,13 +11,18 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Array;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import cn.xm.xmvideoplayer.entity.PageDetailInfo;
 import cn.xm.xmvideoplayer.entity.PageInfo;
 
 /**
@@ -47,31 +52,36 @@ public class JsoupApi {
     /**
      * 最新更新链接
      */
-    private static final String BaseUrlUpdate = "http://www.dytt.com/top/lastupdate";
+    //private static final String BaseUrlUpdate = "http://www.dytt.com/top/lastupdate";
+    private static final String BaseUrlUpdate = "http://www.dytt.com/top/toplist";
     public static final String typeUpdate = "typeUpdate";
 
     /**
-     * 最新电影链接
+     * 最新电影链接http://www.dytt.com/top/toplist_15.html
      */
-    private static String BaseUrlFilm = "http://www.dytt.com/top/lastupdate_15";
+    //private static String BaseUrlFilm = "http://www.dytt.com/top/lastupdate_15";
+    private static String BaseUrlFilm = "http://www.dytt.com/top/toplist_15";
     public static final String typeFilm = "typeFilm";
 
     /**
-     * 最新电视剧链接
+     * 最新电视剧链接http://www.dytt.com/top/toplist_16.html
      */
-    private static String BaseUrlTv = "http://www.dytt.com/top/lastupdate_16";
+    // private static String BaseUrlTv = "http://www.dytt.com/top/lastupdate_16";
+    private static String BaseUrlTv = "http://www.dytt.com/top/toplist_16";
     public static final String typeTv = "typeTv";
 
     /**
-     * 最新动漫链接
+     * 最新动漫链接http://www.dytt.com/top/toplist_7.html
      */
-    private static String BaseUrlCartoon = "http://www.dytt.com/top/lastupdate_7";
+    //private static String BaseUrlCartoon = "http://www.dytt.com/top/lastupdate_7";
+    private static String BaseUrlCartoon = "http://www.dytt.com/top/toplist_7";
     public static final String typeCartoon = "typeCartoon";
 
     /**
-     * 最新综艺链接
+     * 最新综艺链接http://www.dytt.com/top/toplist_8.html
      */
-    private static String BaseUrlVariety = "http://www.dytt.com/top/lastupdate_8";
+    //private static String BaseUrlVariety = "http://www.dytt.com/top/lastupdate_8";
+    private static String BaseUrlVariety = "http://www.dytt.com/top/toplist_8";
     public static final String typeVariety = "typeVariety";
 
     /**
@@ -105,26 +115,31 @@ public class JsoupApi {
         return mdoc;
     }
 
+
     /**
      * 获取信息详情数据
      *
-     * @param URL
+     * @param URL 页面链接
+     * @return
      */
-    public void GetPageDetail(String URL) {
+    public PageDetailInfo GetPageDetail(String URL) {
+
         Document doc = GetDoc(URL, Connection.Method.GET);
         //标题
         String title = doc.select("div.movie h1").first().html();
-        //Log.i("msg","标题："+title);
         //封面链接
-        String pic = doc.select("div.pic").first().getElementsByTag("img").first().select("img").attr("src").trim();
-        // Log.i("msg","封面链接："+pic);
+        String cover = doc.select("div.pic").first().getElementsByTag("img").first().select("img").attr("src").trim();
         //剧情介绍
         String smalltext = doc.select("div.smalltext").first().html();
         String alltext = doc.select("div.alltext").first().html();
-        // Log.i("msg","剧情介绍："+smalltext);
+        //主演,更新时间
+        String actor = doc.select("div.movie ul").first().outerHtml().replaceAll("li", "br");
         //下载地址
         Elements downlist = doc.select("div.downlist script");
+        //
+        List<List> listsdownload = new ArrayList<List>();
         for (Element et : downlist) {
+            List<String> lists = new ArrayList<>();
             if (et.html().contains("GvodUrls")) {
                 Pattern pat = Pattern.compile("\"(.*?)\"");
                 Matcher mat = pat.matcher(et.html());
@@ -136,17 +151,34 @@ public class JsoupApi {
                     } catch (UnsupportedEncodingException e) {
                         e.printStackTrace();
                     }
+                    //
                     String[] split = urlDeCode.split("###");
                     for (int i = 0; i < split.length; i++) {
-                        //Log.i("msg","下载地址:"+split[i]);
+                        if (!"".equals(split[i])) {
+                            lists.add(split[i]);
+                        }
                     }
+                    Collections.reverse(lists);
+                    listsdownload.add(lists);
                 }
             }
+
         }
-        //主演,更新时间
-        String st = doc.select("div.movie ul").first().outerHtml().replaceAll("li", "br");
-        //textView.setText(Html.fromHtml(st));
-        //Log.i("msg","主演："+st);
+        return new PageDetailInfo(title, cover, smalltext, alltext, actor, listsdownload);
+
+    }
+
+    /**
+     * 获取信息封面链接
+     *
+     * @param URL 页面链接
+     * @return
+     */
+    public String GetPageDetailCover(String URL) {
+        Document doc = GetDoc(URL, Connection.Method.GET);
+        //封面链接
+        String cover = doc.select("div.pic").first().getElementsByTag("img").first().select("img").attr("src").trim();
+        return cover;
     }
 
     /**
@@ -185,7 +217,7 @@ public class JsoupApi {
             String type = et.select("p.s5").first().html();
             String actor = et.select("p.s6").first().html();
             String updatetime = et.select("p.s7").first().html();
-            String ahref = BaseUrl+et.select("p.s1").first().select("a").attr("href");
+            String ahref = BaseUrl + et.select("p.s1").first().select("a").attr("href");
             String title = et.select("p.s1").first().select("a").html();
             String year = et.select("p").first().nextElementSibling().html();
             String addr = et.select("p").first().nextElementSibling().nextElementSibling().html().replace("&nbsp;", "");
@@ -221,7 +253,7 @@ public class JsoupApi {
             case typeVariety:
                 return BaseUrlVariety + mPage + html;
         }
-        return null;
+        return BaseUrl;
     }
 
     /**

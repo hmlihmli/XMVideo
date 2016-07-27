@@ -10,34 +10,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.xm.xmvideoplayer.R;
+import cn.xm.xmvideoplayer.entity.PageDetailInfo;
 import cn.xm.xmvideoplayer.entity.SeasonDetailBean;
 
 /**
  * Created by gaohailong on 2016/5/17.
  */
-public class SeasonDetailHolder extends BaseViewHolder<SeasonDetailBean.DataBean.SeasonBean.EpisodeBriefBean> {
+public class SeasonDetailHolder extends BaseViewHolder<String> {
 
     private TextView tv_title;
-    private TextView tv_title2;
-    private List<SeasonDetailBean.DataBean.SeasonBean.EpisodeBriefBean> list=new ArrayList<>();
+    private List<String> list=new ArrayList<>();
 
-    public SeasonDetailHolder(ViewGroup parent, List<SeasonDetailBean.DataBean.SeasonBean.EpisodeBriefBean> list) {
+    public SeasonDetailHolder(ViewGroup parent, List<String> list) {
         super(parent, R.layout.item_seasonlist);
         tv_title = $(R.id.tv_title);
-        tv_title2 = $(R.id.tv_title2);
         this.list=list;
     }
 
     @Override
-    public void setData(SeasonDetailBean.DataBean.SeasonBean.EpisodeBriefBean data) {
+    public void setData(String data) {
         super.setData(data);
         //
-        tv_title.setText((list.size()-getLayoutPosition()+1)+"");
-        if (getLayoutPosition() == 1) {
-            tv_title2.setVisibility(View.VISIBLE);
-        } else {
-            tv_title2.setVisibility(View.INVISIBLE);
-        }
+        tv_title.setText(data);
     }
 
 }

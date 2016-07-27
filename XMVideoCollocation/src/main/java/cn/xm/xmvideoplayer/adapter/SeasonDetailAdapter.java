@@ -6,12 +6,13 @@ import android.view.ViewGroup;
 import com.jude.easyrecyclerview.adapter.BaseViewHolder;
 import com.jude.easyrecyclerview.adapter.RecyclerArrayAdapter;
 
+import cn.xm.xmvideoplayer.entity.PageDetailInfo;
 import cn.xm.xmvideoplayer.entity.SeasonDetailBean;
 
 /**
  * Created by gaohailong on 2016/5/17.
  */
-public class SeasonDetailAdapter extends RecyclerArrayAdapter<SeasonDetailBean.DataBean.SeasonBean.EpisodeBriefBean> {
+public class SeasonDetailAdapter extends RecyclerArrayAdapter<String> {
 
     public SeasonDetailAdapter(Context context) {
         super(context);

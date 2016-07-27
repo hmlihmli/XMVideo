@@ -8,5 +8,5 @@ public class IntenConstant {
     /**
      * 电视剧id
      */
-    public static final String seasonid = "seasonid";
+    public static final String pagedetailurl = "pagedetailurl";
 }
