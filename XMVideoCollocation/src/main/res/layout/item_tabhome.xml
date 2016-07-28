@@ -56,6 +56,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="3dp"
             android:gravity="left"
+            android:visibility="gone"
             android:text="发布时间:16-07-25  "
             android:textColor="@color/secondary_text"
             android:textSize="12sp" />

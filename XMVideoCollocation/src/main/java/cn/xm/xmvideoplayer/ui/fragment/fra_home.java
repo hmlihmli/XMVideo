@@ -1,5 +1,6 @@
 package cn.xm.xmvideoplayer.ui.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -15,9 +16,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
+import butterknife.OnClick;
 import cn.xm.xmvideoplayer.R;
 import cn.xm.xmvideoplayer.adapter.TabHomePagerAdaper;
 import cn.xm.xmvideoplayer.core.BaseFragment;
+import cn.xm.xmvideoplayer.ui.activity.act_searchpage;
 import cn.xm.xmvideoplayer.view.HomeRecycleView1;
 import cn.xm.xmvideoplayer.view.HomeRecycleView2;
 import cn.xm.xmvideoplayer.view.HomeRecycleView3;
@@ -135,6 +138,10 @@ public class fra_home extends BaseFragment {
         return super.onOptionsItemSelected(item);
     }
 
+    @OnClick(R.id.ll_search)
+    public void click1(View view) {
+        startActivity(new Intent(getActivity(), act_searchpage.class));
+    }
 
     @Override
     public void onDestroyView() {

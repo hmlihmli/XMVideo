@@ -7,18 +7,18 @@
     <LinearLayout
         android:id="@+id/ll_search"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:background="@color/colorPrimary"
-        android:clickable="true"
         android:gravity="center"
         android:orientation="horizontal"
         android:padding="5dp">
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:background="@color/colorPrimaryDark"
-            android:gravity="center"
+            android:gravity="left|center_vertical"
             android:orientation="horizontal"
             android:paddingBottom="5dp"
             android:paddingTop="5dp">
@@ -26,15 +26,33 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="8dp"
                 android:src="@drawable/ic_search_black_18dp" />
 
-            <TextView
-                android:layout_width="wrap_content"
+            <EditText
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text=" 请输入关键字 你懂得"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:background="@null"
+                android:hint=" 请输入关键字 你懂得"
                 android:textColor="@color/black_90"
                 android:textSize="14sp" />
+
         </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:padding="3dp"
+            android:layout_marginLeft="3dp"
+            android:layout_marginRight="3dp"
+            android:text="搜索"
+            android:textColor="@color/black_90"
+            android:textSize="16sp" />
     </LinearLayout>
 
 </LinearLayout>
