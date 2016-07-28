@@ -6,22 +6,49 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+import io.realm.RealmObject;
+import io.realm.annotations.Ignore;
+
 /**
  * Created by WANG on 2016/7/27.
  * 页面详情
  */
-public class PageDetailInfo implements Serializable {
-    //标题
-    String title;
-    //封面链接
-    String cover;
-    //剧情介绍
-    String smalltext;
-    String alltext;
-    //主演,更新时间
-    String actor;
-    //下载地址
+public class PageDetailInfo extends RealmObject implements Serializable {
+    /**
+     * 页面链接
+     */
+    private String Url;
+    /**
+     * 标题
+     */
+    private String title;
+    /**
+     * 封面链接
+     */
+    private String cover;
+    /**
+     * 剧情介绍
+     */
+    private String smalltext;
+    private String alltext;
+
+    /**
+     * 主演,更新时间
+     */
+    private String actor;
+    /**
+     * 下载地址
+     */
+    @Ignore
     List<List> downlist;
+
+    public String getUrl() {
+        return Url;
+    }
+
+    public void setUrl(String url) {
+        Url = url;
+    }
 
     public String getTitle() {
         return title;
@@ -83,7 +110,8 @@ public class PageDetailInfo implements Serializable {
                 '}';
     }
 
-    public PageDetailInfo(String title, String cover, String smalltext, String alltext, String actor, List<List> downlist) {
+    public PageDetailInfo(String url, String title, String cover, String smalltext, String alltext, String actor, List<List> downlist) {
+        Url = url;
         this.title = title;
         this.cover = cover;
         this.smalltext = smalltext;

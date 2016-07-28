@@ -16,6 +16,7 @@
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="6dp"
             android:layout_weight="1"
             android:background="@color/colorPrimaryDark"
             android:gravity="left|center_vertical"
@@ -32,27 +33,33 @@
                 android:src="@drawable/ic_search_black_18dp" />
 
             <EditText
+                android:id="@+id/et_search"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_weight="1"
                 android:background="@null"
                 android:hint=" 请输入关键字 你懂得"
+                android:imeOptions="actionDone"
+                android:inputType="text"
+                android:maxLines="1"
+                android:singleLine="true"
                 android:textColor="@color/black_90"
                 android:textSize="14sp" />
 
         </LinearLayout>
 
         <TextView
+            android:id="@+id/tv_search"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:padding="3dp"
             android:layout_marginLeft="3dp"
             android:layout_marginRight="3dp"
+            android:padding="3dp"
             android:text="搜索"
             android:textColor="@color/black_90"
-            android:textSize="16sp" />
+            android:textSize="14sp" />
     </LinearLayout>
 
 </LinearLayout>

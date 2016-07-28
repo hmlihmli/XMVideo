@@ -3,6 +3,7 @@ package cn.xm.xmvideoplayer.core;
 import android.os.Bundle;
 
 import butterknife.ButterKnife;
+import cn.xm.xmvideoplayer.utils.StatusBarCompat;
 import cn.xm.xmvideoplayer.widget.swipebacklayout.SwipeBackActivity;
 import cn.xm.xmvideoplayer.widget.swipebacklayout.SwipeBackLayout;
 
@@ -22,7 +23,9 @@ public abstract class BaseSwipeBackActivity extends SwipeBackActivity {
         //设置布局内容
         setContentView(getLayoutId());
         //初始化黄油刀控件绑定框架
-       ButterKnife.bind(this);
+        ButterKnife.bind(this);
+        //适配4.4状态栏
+        StatusBarCompat.compat(this);
         //初始化侧滑返回layout
         mSwipeBackLayout = getSwipeBackLayout();
         mSwipeBackLayout.setEdgeTrackingEnabled(SwipeBackLayout.EDGE_LEFT);

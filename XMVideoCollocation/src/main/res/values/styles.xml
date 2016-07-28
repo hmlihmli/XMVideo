@@ -37,7 +37,12 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
-    <style name="AppTheme.TransparentStatusBar" parent="AppTheme">
+    <style name="AppTheme.TransparentStatusBar" parent="Base.Theme.DesignDemo">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+    </style>
+    <style name="AppTheme.TransparentStatusBar2" parent="Base.Theme.DesignDemo">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:windowIsTranslucent">true</item>

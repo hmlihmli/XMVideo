@@ -13,6 +13,7 @@
         android:layout_weight="1" />
 
     <RadioGroup
+        android:visibility="gone"
         android:id="@+id/rg_homebar"
         android:layout_width="match_parent"
         android:layout_height="48dp"

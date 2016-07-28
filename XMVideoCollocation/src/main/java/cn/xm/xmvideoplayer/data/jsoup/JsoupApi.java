@@ -38,7 +38,7 @@ public class JsoupApi {
      * useragent
      */
     public static final String useragent = "Mozilla";
-    public static final int timeout = 10000;
+    public static final int timeout = 20000;
     /**
      * 主链接
      */
@@ -47,7 +47,7 @@ public class JsoupApi {
     /**
      * 搜索链接
      */
-    private static String BaseUrlSearch = "http://www.dytt.com/search.asp?searchword=";
+    private static String BaseUrlSearch = "http://www.dytt.com/search.asp?page=";
 
     /**
      * 最新更新链接
@@ -125,8 +125,15 @@ public class JsoupApi {
     public PageDetailInfo GetPageDetail(String URL) {
 
         Document doc = GetDoc(URL, Connection.Method.GET);
+        if (doc==null){
+            return null;
+        }
         //标题
-        String title = doc.select("div.movie h1").first().html();
+        Element etitle = doc.select("div.movie h1").first();
+        String title = "";
+        if (etitle != null) {
+            title = etitle.html();
+        }
         //封面链接
         String cover = doc.select("div.pic").first().getElementsByTag("img").first().select("img").attr("src").trim();
         //剧情介绍
@@ -164,8 +171,9 @@ public class JsoupApi {
             }
 
         }
-        return new PageDetailInfo(title, cover, smalltext, alltext, actor, listsdownload);
-
+        doc = null;
+        System.gc();
+        return new PageDetailInfo(URL,title, cover, smalltext, alltext, actor, listsdownload);
     }
 
     /**
@@ -178,18 +186,24 @@ public class JsoupApi {
         Document doc = GetDoc(URL, Connection.Method.GET);
         //封面链接
         String cover = doc.select("div.pic").first().getElementsByTag("img").first().select("img").attr("src").trim();
+        doc = null;
+        System.gc();
         return cover;
     }
 
     /**
      * 获取搜索结果数据
+     * http://www.dytt.com/search.asp?page=4&searchword=%C0%CF&searchtype=-1
      *
      * @param kw 关键字
      * @return list
      */
-    public List<PageInfo> GetPageSearch(String kw) {
-        Document doc = GetDoc(DealUrl(kw), Connection.Method.POST);
-        return GetPageDeal(doc);
+    public List<PageInfo> GetPageSearch(int page, String kw) {
+        Document doc = GetDoc(DealUrlSearch(page, kw), Connection.Method.POST);
+        List<PageInfo> pageInfos = GetPageDeal(doc);
+        doc = null;
+        System.gc();
+        return pageInfos;
     }
 
     /**
@@ -200,7 +214,10 @@ public class JsoupApi {
      */
     public List<PageInfo> GetPage(int Page, String type) {
         Document doc = GetDoc(DealUrl(Page, type), Connection.Method.GET);
-        return GetPageDeal(doc);
+        List<PageInfo> pageInfos = GetPageDeal(doc);
+        doc = null;
+        System.gc();
+        return pageInfos;
     }
 
     /**
@@ -211,7 +228,13 @@ public class JsoupApi {
      */
     private List<PageInfo> GetPageDeal(Document doc) {
         ArrayList<PageInfo> pageInfos = new ArrayList<>();
+        if (doc == null) {
+            return null;
+        }
         Elements movielist = doc.select("div.movielist li");
+        if (movielist==null){
+            return null;
+        }
         for (Element et : movielist) {
             String score = et.select("p.s4").first().html();
             String type = et.select("p.s5").first().html();
@@ -224,11 +247,13 @@ public class JsoupApi {
             pageInfos.add(new PageInfo(score, type, actor, updatetime, ahref, title, year, addr));
             //Log.i("msg", "  评分：" + score + "  网址:" + ahref + "  标题:" + title + "  类型:" + type + "  主演:" + actor + "  更新时间:" + updatetime + "  年代:" + year + "  地区:" + addr);
         }
+        doc = null;
+        System.gc();
         return pageInfos;
     }
 
     /**
-     * 处理链接格式,加上页码
+     * 处理链接格式,展示页面
      *
      * @param Page 页面
      * @return 处理后的结果
@@ -258,17 +283,20 @@ public class JsoupApi {
 
     /**
      * 处理链接格式，搜索页面
+     * http://www.dytt.com/search.asp?page=4&searchword=%C0%CF&searchtype=-1
      *
      * @param kw 关键词（不需要编码转换）
      * @return 处理后的结果
      */
-    private String DealUrl(String kw) {
+    private String DealUrlSearch(int page, String kw) {
         String kwgb2312 = "";
+        String field1 = "&searchword=";
+        String field2 = "&searchtype=-1";
         try {
             kwgb2312 = URLEncoder.encode(kw, urlencodde);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        return BaseUrlSearch + kwgb2312;
+        return BaseUrlSearch + page + field1 + "" + kwgb2312 + field2;
     }
 }

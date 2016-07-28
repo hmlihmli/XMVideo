@@ -3,6 +3,8 @@ package cn.xm.xmvideoplayer.core;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
+import com.squareup.leakcanary.RefWatcher;
+
 import butterknife.ButterKnife;
 import cn.xm.xmvideoplayer.utils.StatusBarCompat;
 
@@ -20,14 +22,13 @@ public abstract class BaseCompatActivity extends AppCompatActivity {
         //设置布局内容
         setContentView(getLayoutId());
         //初始化黄油刀控件绑定框架
-       ButterKnife.bind(this);
+        ButterKnife.bind(this);
         //适配4.4状态栏
         StatusBarCompat.compat(this);
         //初始化控件
         initViews(savedInstanceState);
         //初始化ToolBar
         initToolBar();
-
     }
 
     @Override

@@ -20,6 +20,7 @@ import butterknife.OnClick;
 import cn.xm.xmvideoplayer.R;
 import cn.xm.xmvideoplayer.adapter.TabHomePagerAdaper;
 import cn.xm.xmvideoplayer.core.BaseFragment;
+import cn.xm.xmvideoplayer.ui.activity.act_favorite;
 import cn.xm.xmvideoplayer.ui.activity.act_searchpage;
 import cn.xm.xmvideoplayer.view.HomeRecycleView1;
 import cn.xm.xmvideoplayer.view.HomeRecycleView2;
@@ -132,7 +133,8 @@ public class fra_home extends BaseFragment {
         int id = item.getItemId();
 
         switch (id) {
-            case R.id.action_history:
+            case R.id.action_grade:
+                startActivity(new Intent(getActivity(), act_favorite.class));
                 break;
         }
         return super.onOptionsItemSelected(item);

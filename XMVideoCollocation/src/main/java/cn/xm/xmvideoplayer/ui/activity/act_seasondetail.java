@@ -1,20 +1,24 @@
 package cn.xm.xmvideoplayer.ui.activity;
 
 
+import android.annotation.TargetApi;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -29,9 +33,11 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import cn.xm.xmvideoplayer.R;
 import cn.xm.xmvideoplayer.adapter.SeasonDetailAdapter;
+import cn.xm.xmvideoplayer.constant.DbConstant;
 import cn.xm.xmvideoplayer.constant.IntenConstant;
 import cn.xm.xmvideoplayer.core.BaseSwipeBackActivity;
 import cn.xm.xmvideoplayer.data.jsoup.JsoupApi;
+import cn.xm.xmvideoplayer.data.realm.DbFav;
 import cn.xm.xmvideoplayer.entity.PageDetailInfo;
 import cn.xm.xmvideoplayer.utils.CheckApp;
 import cn.xm.xmvideoplayer.utils.DensityUtil;
@@ -41,26 +47,56 @@ import cn.xm.xmvideoplayer.utils.DensityUtil;
  */
 public class act_seasondetail extends BaseSwipeBackActivity {
 
- /*   @Bind(R.id.detail_text)
-    TextView detailtext;*/
-
     @Bind(R.id.detail_image)
     ImageView detailImage;
+
+    @Bind(R.id.rl_progress)
+    RelativeLayout rlprogress;
 
     @Bind(R.id.toolbar)
     Toolbar mtoolbar;
 
     @Bind(R.id.coll_toolbar_layout)
     CollapsingToolbarLayout mcollToolbarLayout;
+
     @Bind(R.id.recycler_view)
     EasyRecyclerView mrecyclerView;
-    private Handler mhandler = new Handler();
-    private ActionBar mActionBar;
-    private SeasonDetailAdapter mAdapter;
-    private String pageDetailurl;
-    private TextView tv_content;
-    private TextView tv_actor;
 
+    /**
+     * handler
+     */
+    private Handler mhandler = new Handler();
+
+    /**
+     * actionbar
+     */
+    private ActionBar mActionBar;
+    /**
+     * 下载链接adapter
+     */
+    private SeasonDetailAdapter mAdapter;
+    /**
+     * intent传入的链接
+     */
+    private String pageDetailurl;
+    /**
+     * 简介内容
+     */
+    private TextView tv_content;
+    /**
+     * 演员上映日期
+     */
+    private TextView tv_actor;
+    /**
+     * 展开收起简介
+     */
+    private TextView tv_expend;
+    /**
+     * 收藏
+     */
+    private TextView tv_fav;
+    private Thread thread1;
+    private DbFav dbFav;
 
     @Override
     public int getLayoutId() {
@@ -71,14 +107,12 @@ public class act_seasondetail extends BaseSwipeBackActivity {
     public void initViews(Bundle savedInstanceState) {
 
         pageDetailurl = getIntent().getStringExtra(IntenConstant.pagedetailurl);
-
         //toolbar
         inittoolbar();
         //recycleview
         initrecycle();
         //getdata
         getDetaildata();
-
     }
 
     /**
@@ -87,9 +121,8 @@ public class act_seasondetail extends BaseSwipeBackActivity {
     private void initrecycle() {
         //
         mAdapter = new SeasonDetailAdapter(this);
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 1);
-        gridLayoutManager.setSpanSizeLookup(mAdapter.obtainGridSpanSizeLookUp(1));
-        mrecyclerView.setLayoutManager(gridLayoutManager);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        mrecyclerView.setLayoutManager(linearLayoutManager);
         //
         mAdapter.addHeader(new RecyclerArrayAdapter.ItemView() {
             @Override
@@ -119,9 +152,7 @@ public class act_seasondetail extends BaseSwipeBackActivity {
             }
         });
         //
-
     }
-
 
     /**
      * 初始化toolbar
@@ -130,12 +161,12 @@ public class act_seasondetail extends BaseSwipeBackActivity {
         // 初始化ToolBar
         setSupportActionBar(mtoolbar);
         mActionBar = getSupportActionBar();
-   /*     if (mActionBar != null) {
+        /* if (mActionBar != null) {
             mActionBar.setDisplayHomeAsUpEnabled(true);
         }*/
         //返回键
         final Drawable upArrow = getResources().getDrawable(R.drawable.abc_ic_ab_back_mtrl_am_alpha);
-//        upArrow.setColorFilter(getResources().getColor(R.color.black_90), PorterDuff.Mode.SRC_ATOP);
+        //upArrow.setColorFilter(getResources().getColor(R.color.black_90), PorterDuff.Mode.SRC_ATOP);
         mtoolbar.setNavigationIcon(upArrow);
         mtoolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -143,7 +174,7 @@ public class act_seasondetail extends BaseSwipeBackActivity {
                 finish();
             }
         });
-    /*    //设置title颜色
+        /*//设置title颜色
         //mcollToolbarLayout.setTitle("title");
         mcollToolbarLayout.setExpandedTitleColor(getResources().getColor(R.color.black_90));
         mcollToolbarLayout.setCollapsedTitleTextColor(getResources().getColor(R.color.black_90));
@@ -156,10 +187,13 @@ public class act_seasondetail extends BaseSwipeBackActivity {
      * 获取网络数据
      */
     private void getDetaildata() {
-        new Thread(new Runnable() {
+        thread1 = new Thread(new Runnable() {
             @Override
             public void run() {
                 final PageDetailInfo pageDetailInfo = JsoupApi.NewInstans().GetPageDetail(pageDetailurl);
+                if (pageDetailInfo == null) {
+                    return;
+                }
                 mhandler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -174,21 +208,37 @@ public class act_seasondetail extends BaseSwipeBackActivity {
                     }
                 });
             }
-        }).start();
+        });
+        thread1.start();
 
     }
 
     /**
      * 更新view
      */
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     private void updataview(PageDetailInfo pageDetailInfo) {
-
+        if (pageDetailInfo == null) {
+            return;
+        }
+        //取消progressbar
+        if (rlprogress != null) {
+            rlprogress.setVisibility(View.GONE);
+        }
         //header
-        updateheaer(pageDetailInfo.getAlltext(), pageDetailInfo.getActor());
-
-        //
-        mcollToolbarLayout.setTitle(pageDetailInfo.getTitle());
-        Glide.with(this).load(pageDetailInfo.getCover()).centerCrop().diskCacheStrategy(DiskCacheStrategy.SOURCE).into(detailImage);
+        updateheaer(pageDetailInfo, pageDetailInfo.getSmalltext(), pageDetailInfo.getAlltext(), pageDetailInfo.getActor());
+        //appbar
+        if (pageDetailInfo.getTitle() != null && mcollToolbarLayout != null) {
+            mcollToolbarLayout.setTitle(pageDetailInfo.getTitle());
+        }
+        if (!this.isDestroyed()) {
+            Glide.with(this)
+                    .load(pageDetailInfo.getCover())
+                    .asBitmap()
+                    .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                    .centerCrop()
+                    .into(detailImage);
+        }
     }
 
     /**
@@ -200,20 +250,62 @@ public class act_seasondetail extends BaseSwipeBackActivity {
         View view = getLayoutInflater().inflate(R.layout.item_seasonlist_header, null);
         tv_content = ButterKnife.findById(view, R.id.tv_content);
         tv_actor = ButterKnife.findById(view, R.id.tv_actor);
+        tv_expend = ButterKnife.findById(view, R.id.tv_expend);
+        tv_fav = ButterKnife.findById(view, R.id.tv_fav);
         return view;
     }
 
     /**
      * 更新headerview数据
      *
-     * @param content
+     * @param smalltext 部分简介
+     * @param alltext   所有简介
+     * @param actor     演员等信息
      */
-    private void updateheaer(String content, String actor) {
-        if (content.length() == 0) {
-            content = "暂时没有简介哦~~";
-        }
-        tv_content.setText(Html.fromHtml(content));
+    private void updateheaer(final PageDetailInfo pageDetailInfo, final String smalltext, final String alltext, String actor) {
+        tv_content.setText(Html.fromHtml(smalltext));
         tv_actor.setText(Html.fromHtml(actor));
+        //展开收缩简介
+        tv_expend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (getResources().getString(R.string.textcontent3).equals(tv_expend.getText())) {//展开全部
+                    tv_expend.setText(getResources().getString(R.string.textcontent4));
+                    tv_content.setText(Html.fromHtml(alltext));
+                } else if (getResources().getString(R.string.textcontent4).equals(tv_expend.getText())) {//收起简介
+                    tv_expend.setText(getResources().getString(R.string.textcontent3));
+                    tv_content.setText(Html.fromHtml(smalltext));
+                }
+            }
+        });
+        //收藏状态
+        dbFav = DbFav.Builder(this, DbConstant.DbFavrite);
+        if (dbFav.FindIsExit(pageDetailurl)) {//已收藏
+            tv_fav.setText(getResources().getString(R.string.textfav2));
+        } else {//未收藏
+            tv_fav.setText(getResources().getString(R.string.textfav1));
+        }
+        tv_fav.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (dbFav.FindIsExit(pageDetailurl)) {//已收藏
+                    if (dbFav.DeleteItem(pageDetailurl)) {
+                        Snackbar.make(mrecyclerView, "取消收藏成功", Snackbar.LENGTH_SHORT).show();
+                        tv_fav.setText(getResources().getString(R.string.textfav1));
+                    } else {
+                        Snackbar.make(mrecyclerView, "取消收藏失败", Snackbar.LENGTH_SHORT).show();
+                    }
+                } else {//未收藏
+                    if (dbFav.Insert(pageDetailInfo)) {
+                        Snackbar.make(mrecyclerView, "添加收藏成功", Snackbar.LENGTH_SHORT).show();
+                        tv_fav.setText(getResources().getString(R.string.textfav2));
+                    } else {
+                        Snackbar.make(mrecyclerView, "添加收藏失败", Snackbar.LENGTH_SHORT).show();
+                    }
+                }
+            }
+        });
+
     }
 /*
     @Override
@@ -236,6 +328,12 @@ public class act_seasondetail extends BaseSwipeBackActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if (dbFav!=null){
+            dbFav.Close();
+        }
         mhandler.removeCallbacksAndMessages(null);
+        if (thread1.isAlive()) {
+            thread1.interrupt();
+        }
     }
 }
