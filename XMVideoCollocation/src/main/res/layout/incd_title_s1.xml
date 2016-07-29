@@ -31,7 +31,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=" 请输入关键字 你懂得"
+                android:text="@string/textsearch1"
                 android:textColor="@color/black_90"
                 android:textSize="14sp" />
         </LinearLayout>

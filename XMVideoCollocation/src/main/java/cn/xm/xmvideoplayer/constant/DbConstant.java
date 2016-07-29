@@ -10,4 +10,9 @@ public class DbConstant {
      * 收藏
      */
     public static final String DbFavrite = "DbFavrite";
+
+    /**
+     * 历史记录
+     */
+    public static final String DbSearchHis = "DbSearchHis";
 }

@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 /**
  * Created by zhy on 15/9/21.
  */
-public class StatusBarCompat
+public class StatusBarCompatUtil
 {
 
     //#20000000

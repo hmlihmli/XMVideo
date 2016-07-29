@@ -27,7 +27,8 @@
         </activity>
         <activity
             android:name=".ui.activity.act_home"
-            android:theme="@style/Theme.DesignDemo">
+            android:theme="@style/Theme.DesignDemo"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustNothing">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -36,13 +37,15 @@
         </activity>
         <activity
             android:name=".ui.activity.act_seasondetail"
-            android:theme="@style/AppTheme.TransparentStatusBar"></activity>
+            android:theme="@style/AppTheme.TransparentStatusBar"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustNothing"></activity>
         <activity
             android:name=".widget.PLVideoTextureActivity"
             android:theme="@style/AppThemeFullscreen" />
         <activity
             android:name=".ui.activity.act_searchpage"
-            android:theme="@style/AppTheme.TransparentStatusBar2"></activity>
+            android:theme="@style/AppTheme.TransparentStatusBar2"
+            android:windowSoftInputMode="stateAlwaysVisible|adjustNothing"></activity>
         <activity
             android:name=".ui.activity.act_favorite"
             android:theme="@style/AppTheme.TransparentStatusBar2"></activity>

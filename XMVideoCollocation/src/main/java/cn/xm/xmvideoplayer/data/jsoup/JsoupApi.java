@@ -125,7 +125,7 @@ public class JsoupApi {
     public PageDetailInfo GetPageDetail(String URL) {
 
         Document doc = GetDoc(URL, Connection.Method.GET);
-        if (doc==null){
+        if (doc == null) {
             return null;
         }
         //标题
@@ -173,7 +173,7 @@ public class JsoupApi {
         }
         doc = null;
         System.gc();
-        return new PageDetailInfo(URL,title, cover, smalltext, alltext, actor, listsdownload);
+        return new PageDetailInfo(URL, title, cover, smalltext, alltext, actor, listsdownload);
     }
 
     /**
@@ -232,7 +232,7 @@ public class JsoupApi {
             return null;
         }
         Elements movielist = doc.select("div.movielist li");
-        if (movielist==null){
+        if (movielist == null) {
             return null;
         }
         for (Element et : movielist) {
@@ -247,8 +247,6 @@ public class JsoupApi {
             pageInfos.add(new PageInfo(score, type, actor, updatetime, ahref, title, year, addr));
             //Log.i("msg", "  评分：" + score + "  网址:" + ahref + "  标题:" + title + "  类型:" + type + "  主演:" + actor + "  更新时间:" + updatetime + "  年代:" + year + "  地区:" + addr);
         }
-        doc = null;
-        System.gc();
         return pageInfos;
     }
 

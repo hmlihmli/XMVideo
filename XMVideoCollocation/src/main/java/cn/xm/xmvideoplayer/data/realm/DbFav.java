@@ -82,7 +82,7 @@ public class DbFav {
      */
     public RealmResults<PageDetailInfo> FindItem(String url) {
         return myRealm.where(PageDetailInfo.class)
-                .endsWith("Url", url)
+                .equalTo("Url", url)
                 .findAll();
     }
 

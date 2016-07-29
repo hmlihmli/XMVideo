@@ -22,6 +22,6 @@
     <string name="textcontent4">收起简介</string>
     <string name="textfav1">点击收藏</string>
     <string name="textfav2">已收藏</string>
-
-
+    <string name="textsearch"> 请输入影片名 电影类型 演员名 等</string>
+    <string name="textsearch1">   点我搜索 你懂的</string>
 </resources>

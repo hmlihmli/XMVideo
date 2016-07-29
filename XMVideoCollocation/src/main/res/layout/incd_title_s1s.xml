@@ -39,7 +39,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_weight="1"
                 android:background="@null"
-                android:hint=" 请输入关键字 你懂得"
+                android:hint="@string/textsearch"
                 android:imeOptions="actionDone"
                 android:inputType="text"
                 android:maxLines="1"

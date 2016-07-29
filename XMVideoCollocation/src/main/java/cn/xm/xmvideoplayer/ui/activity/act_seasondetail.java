@@ -11,7 +11,6 @@ import android.os.Handler;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
@@ -39,7 +38,7 @@ import cn.xm.xmvideoplayer.core.BaseSwipeBackActivity;
 import cn.xm.xmvideoplayer.data.jsoup.JsoupApi;
 import cn.xm.xmvideoplayer.data.realm.DbFav;
 import cn.xm.xmvideoplayer.entity.PageDetailInfo;
-import cn.xm.xmvideoplayer.utils.CheckApp;
+import cn.xm.xmvideoplayer.utils.CheckAppUtil;
 import cn.xm.xmvideoplayer.utils.DensityUtil;
 
 /**
@@ -140,7 +139,7 @@ public class act_seasondetail extends BaseSwipeBackActivity {
             @Override
             public void onItemClick(int position) {
 
-                if (CheckApp.isAvilible(getApplicationContext(), CheckApp.XLPackget)) {
+                if (CheckAppUtil.isAvilible(getApplicationContext(), CheckAppUtil.XLPackget)) {
                     Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(mAdapter.getItem(position)));
                     intent.addCategory("android.intent.category.DEFAULT");
                     startActivity(intent);

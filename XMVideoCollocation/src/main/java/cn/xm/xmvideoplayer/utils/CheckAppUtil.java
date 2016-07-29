@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Created by WANG on 2016/7/28.
  */
-public class CheckApp {
+public class CheckAppUtil {
 
     public static final String XLPackget = "com.xunlei.downloadprovider";
 

@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 
 import butterknife.ButterKnife;
-import cn.xm.xmvideoplayer.utils.StatusBarCompat;
+import cn.xm.xmvideoplayer.utils.StatusBarCompatUtil;
 
 /**
  * 作者：ximencx on 2016/6/12 20:58
@@ -23,7 +23,7 @@ public abstract class BaseFragmentActivity extends FragmentActivity {
         //初始化黄油刀控件绑定框架
         ButterKnife.bind(BaseFragmentActivity.this);
         //适配4.4状态栏
-        StatusBarCompat.compat(this);
+        StatusBarCompatUtil.compat(this);
         //初始化控件
         initViews(savedInstanceState);
 
